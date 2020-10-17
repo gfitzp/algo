@@ -47,7 +47,13 @@
           name: dns
         when:
           - algo_dns_adblocking or
-            dns_encryption
+            dns_encryption or
+            pihole
+        tags: dns
+
+      - import_role:
+          name: pihole
+        when: algo_dns_adblocking and pihole
         tags: dns
 
       - import_role:

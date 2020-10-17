@@ -1,0 +1,58 @@
+---
+- block:
+    - name: Create pihole group
+      become: True
+      group:
+        name="{{ group_pihole }}"
+        state=present
+
+    - name: Create pihole user
+      become: True
+      user:
+        name="{{ user_pihole }}"
+        group="{{ group_pihole }}"
+        groups="{{ group_pihole }}"
+        comment="ad filtering DNS proxy"
+        system=True
+        shell="/usr/sbin/nologin"
+
+    - name: Download pihole installer
+      get_url:
+          url: https://install.pi-hole.net
+          dest: ~/install-pihole.sh
+          mode: 0740
+
+    - name: Create pihole config directory
+      become: True
+      file:
+        name="/etc/pihole"
+        state=directory
+        owner="{{ user_pihole }}"
+        group="{{ group_pihole }}"
+        mode=0755
+
+    - name: Create pihole configuration
+      become: True
+      template:
+        src="setupVars.conf.j2"
+        dest="/etc/pihole/setupVars.conf"
+        owner=root
+        group=root
+        mode=0644
+
+    - name: Install pihole
+      shell: "~/install-pihole.sh --unattended"
+      register: dbg_install_pihole
+
+    - name: Create pihole updater
+      cron:
+        name: "Update pihole"
+        special_time: daily
+        job: "pihole -up"
+
+  rescue:
+    - debug: var=fail_hint
+      tags: always
+    - fail:
+      tags: always
+

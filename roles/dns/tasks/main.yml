@@ -23,7 +23,7 @@
 
 - name: Include DNS adblocking tasks
   import_tasks: dns_adblocking.yml
-  when: algo_dns_adblocking
+  when: algo_dns_adblocking and not pihole
 
 - meta: flush_handlers
 
@@ -32,3 +32,4 @@
     name: dnscrypt-proxy
     state: started
     enabled: true
+    daemon_reload: true

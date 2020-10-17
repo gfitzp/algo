@@ -81,6 +81,12 @@ COMMIT
 # Accept DNS traffic to the local DNS resolver
 -A INPUT -d {{ local_service_ip }} -p udp --dport 53 -j ACCEPT
 
+{% if pihole %}
+# Accept Pi-hole traffic
+-A INPUT -d {{ local_service_ip }} -p tcp --dport 80 -j ACCEPT
+-A INPUT -d {{ local_service_ip }} -p tcp --dport 443 -j ACCEPT
+{% endif %}
+
 # Drop traffic between VPN clients
 -A FORWARD -s {{ subnets|join(',') }} -d {{ subnets|join(',') }} -j {{ "DROP" if BetweenClients_DROP else "ACCEPT" }}
 # Drop traffic to VPN clients from SSH tunnels

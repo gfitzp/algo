@@ -41,6 +41,27 @@
   tags: apparmor
   when: apparmor_enabled|default(false)|bool
 
+- block:
+  - name: Ubuntu | Override dnscrypt-proxy.socket to listen on different port
+    copy:
+      dest: /etc/systemd/system/dnscrypt-proxy.socket
+      content: |
+        [Unit]
+        Description=DNSCrypt-proxy socket
+        Documentation=https://github.com/jedisct1/dnscrypt-proxy/wiki
+        Before=nss-lookup.target
+        Wants=nss-lookup.target
+        [Socket]
+        ListenStream=127.0.2.1:52
+        ListenDatagram=127.0.2.1:52
+        NoDelay=true
+        DeferAcceptSec=1
+        [Install]
+        WantedBy=sockets.target
+    notify:
+     - restart dnscrypt-proxy
+  when: pihole
+
 - name: Ubuntu | Ensure that the dnscrypt-proxy service directory exist
   file:
     path: /etc/systemd/system/dnscrypt-proxy.service.d/

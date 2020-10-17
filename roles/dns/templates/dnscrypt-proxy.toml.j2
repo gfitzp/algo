@@ -38,8 +38,8 @@
 ## Note: When using systemd socket activation, choose an empty set (i.e. [] ).
 
 listen_addresses  = [
-  '{{ local_service_ip }}:53'{% if ipv6_support %},
-  '[{{ local_service_ipv6 }}]:53'{% endif %}
+  '{{ local_service_ip }}:53{% if pihole %}53{% endif %}'{% if ipv6_support %},
+  '[{{ local_service_ipv6 }}]:53{% if pihole %}53{% endif %}'{% endif %}
   ]
 
 
@@ -297,7 +297,7 @@ block_ipv6 = false
 
 ## Enable a DNS cache to reduce latency and outgoing traffic
 
-cache = true
+cache = {{ "false" if pihole else "true" }}
 
 
 ## Cache size
@@ -392,7 +392,7 @@ cache_neg_max_ttl = 600
 
   ## Path to the file of blocking rules (absolute, or relative to the same directory as the executable file)
 
-  {{ "blacklist_file = 'blacklist.txt'" if algo_dns_adblocking else "" }}
+  {{ "blacklist_file = 'blacklist.txt'" if algo_dns_adblocking and not pihole else "" }}
 
 
   ## Optional path to a file logging blocked queries
