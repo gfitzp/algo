@@ -59,9 +59,33 @@
         purge: yes
         state: absent
 
+    - name: Restart pihole-FTL on reboot
+      cron:
+        name: "Restart pihole-FTL"
+        special_time: reboot
+        job: "sleep 5 && /usr/sbin/service pihole-FTL restart"
+
   rescue:
     - debug: var=fail_hint
       tags: always
     - fail:
       tags: always
 
+- name: Add LAN DNS hosts dnsmasq file
+  copy:
+    dest: /etc/dnsmasq.d/02-lan.conf
+    content: "addn-hosts=/etc/pihole/lan.list"
+
+- name: Add Pi-hole hosts
+  template:
+    src: lan.list.j2
+    dest: /etc/pihole/lan.list
+    owner: root
+    group: root
+    mode: 0644
+    force: yes
+  notify:
+   - restart pihole-FTL
+  tags: update-users
+
+- meta: flush_handlers

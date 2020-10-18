@@ -1,0 +1,15 @@
+# Dnscrypt-proxy
+
+{{ local_service_ip }} dnscrypt-proxy
+{{ local_service_ipv6 + ' dnscrypt-proxy-ipv6' if ipv6_support else '' }}
+127.0.2.1 dnscrypt-proxy-socket
+
+# Pi-hole users
+
+{% for u in users %}
+{% set index = loop.index %}
+# {{ u }}
+{{ wireguard_network_ipv4 | ipaddr(index|int+1) | ipv4('address') }} {{ u }}
+{{ wireguard_network_ipv6 | ipaddr(index|int+1) | ipv6('address') + ' ' + u +"-ipv6" if ipv6_support else '' }}
+
+{% endfor %}

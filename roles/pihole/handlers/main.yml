@@ -1,2 +1,17 @@
 ---
+- name: daemon reload
+  systemd:
+    daemon_reload: true
 
+- name: restart pihole-FTL
+  systemd:
+    name: pihole-FTL
+    state: restarted
+    daemon_reload: true
+  when: ansible_distribution == 'Ubuntu'
+
+- name: restart pihole-FTL
+  service:
+    name: pihole-FTL
+    state: restarted
+  when: ansible_distribution == 'FreeBSD'
