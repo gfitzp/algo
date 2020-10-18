@@ -50,6 +50,15 @@
         special_time: daily
         job: "pihole -up"
 
+    - name: Remove DHCP (didn't feel like figuring out why dhcp was not playing nicely)
+      apt:
+        name:
+          - dhcpcd5
+          - isc-dhcp-client
+          - isc-dhcp-common
+        purge: yes
+        state: absent
+
   rescue:
     - debug: var=fail_hint
       tags: always
