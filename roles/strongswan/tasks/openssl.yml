@@ -171,7 +171,7 @@
     with_items: "{{ users }}"
     register: p12
 
-  - name: Build the client's p12 with the CA cert included
+  - name: Build the client's p12
     shell: >
       umask 077;
       {{ openssl_bin }} pkcs12
@@ -180,7 +180,6 @@
       -export
       -name {{ item }}
       -out private/{{ item }}_ca.p12
-      -certfile cacert.pem
       -passout pass:"{{ p12_export_password }}"
     args:
       chdir: "{{ ipsec_pki_path }}"
