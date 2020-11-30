@@ -5,6 +5,6 @@ dns_encryption: true
 ipv6_support: false
 dnscrypt_servers:
   ipv4:
-    - cloudflare
+    - google
   ipv6:
-    - cloudflare-ipv6
+    - google-ipv6
